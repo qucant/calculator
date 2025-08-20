@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href=".calc {style.css}">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <title>Document</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="calc">
+    <div class ="display">
+        <p id="display">0</p>
+    </div>
+    <div class ="buttons">
+        <div class="btn ac bg-gray" onclick="clearAll()">ac</div>
+        <div class="btn plus-minus bg-gray" onclick="toggleSign()">+/-</div>
+        <div class="btn percent bg-gray" onclick="percent()">%</div>
+        <div class="btn divide bg-orange" onclick="operator('/')">/</div>
+        <div class="btn seven" onclick="inputNumber('7')">7</div>
+        <div class="btn eight" onclick="inputNumber('8')">8</div>
+        <div class="btn nine" onclick="inputNumber('9')">9</div>
+        <div class="btn multiply bg-orange" onclick="operator('*')"> *</div>
+        <div class="btn four" onclick="inputNumber('4')">4</div>
+        <div class="btn five" onclick="inputNumber('5')">5</div>
+        <div class="btn six" onclick="inputNumber('6')">6</div>
+        <div class="btn minus" onclick="operator('-')">-</div>
+        <div class="btn one" onclick="inputNumber('1')">1</div>
+        <div class="btn two" onclick="inputNumber('2')">2</div>
+        <div class="btn three" onclick="inputNumber('3')">3</div>
+        <div class="btn plus" onclick="operator('+')">+</div>
+        <div class="btn zero" onclick="inputNumber('0')">0</div>
+        <div class="btn decimal" onclick="inputDecimal()">.</div>
+        <div class="btn equal" onclick="calculate()">=</div>
+    </div>
+    </div>
+
+    <script>
+        let currentInput = '0';
+        let previousInput = '';
+        let currentOperator = '';
+        let shouldResetDisplay = false;
+
+        const display = document.getElementById('display');
+
+        function updateDisplay() {
+            display.textContent = currentInput;
+        }
+
+        function inputNumber(num) {
+            if (shouldResetDisplay) {
+                currentInput = '0';
+                shouldResetDisplay = false;
+            }
+            
+            if (currentInput === '0') {
+                currentInput = num;
+            } else {
+                currentInput += num;
+            }
+            updateDisplay();
+        }
+
+        function inputDecimal() {
+            if (shouldResetDisplay) {
+                currentInput = '0';
+                shouldResetDisplay = false;
+            }
+            
+            if (currentInput.indexOf('.') === -1) {
+                currentInput += '.'; 
+            }
+            updateDisplay();
+        }
+
+        function operator(op) {
+            if (currentOperator !== '' && !shouldResetDisplay) {
+                calculate();
+            }
+            
+            previousInput = currentInput;
+            currentOperator = op;
+            shouldResetDisplay = true;
+        }
+
+        function calculate() {
+            if (currentOperator === '' || shouldResetDisplay) {
+                return;
+            }
+
+            const prev = parseFloat(previousInput);
+            const current = parseFloat(currentInput);
+            let result;
+
+            switch (currentOperator) {
+                case '+':
+                    result = prev + current;
+                    break;
+                case '-':
+                    result = prev - current;
+                    break;
+                case '*':
+                    result = prev * current;
+                    break;
+                case '/':
+                    result = prev / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentInput = result.toString();
+            currentOperator = '';
+            previousInput = '';
+            shouldResetDisplay = true;
+            updateDisplay();
+        }
+
+        function clearAll() {
+            currentInput = '0';
+            previousInput = '';
+            currentOperator = '';
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        function toggleSign() {
+            if (currentInput !== '0') {
+                if (currentInput.charAt(0) === '-') {
+                    currentInput = currentInput.slice(1);
+                } else {
+                    currentInput = '-' + currentInput;
+                }
+                updateDisplay();
+            }
+        }
+
+        function percent() {
+            currentInput = (parseFloat(currentInput) / 100).toString();
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
+
+<style>
+    body {
+        background: #1a1a1a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        font-family: 'Poppins', sans-serif;
+    }
+    .calc {
+        margin: 50px auto;
+        width: 320px;
+        height: 520px;
+        border-radius: 25px;
+        background: linear-gradient(145deg, #0f0f0f, #1e1e1e);
+        color: #fff;
+        padding: 20px;
+        box-shadow: 8px 8px 15px #0a0a0a, -8px -8px 15px #2a2a2a;
+    }
+    .btn {
+        width: 65px;
+        height: 65px;
+        background: linear-gradient(145deg, #2b2b2b, #1c1c1c);
+        border-radius: 50%;
+        text-align: center;
+        line-height: 65px;
+        font-size: 1.6rem;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+        transition: all 0.2s ease-in-out;
+        box-shadow: 4px 4px 8px #0d0d0d, -4px -4px 8px #333;
+    }
+    .btn:hover {
+        transform: scale(1.1);
+    }
+    .btn:active {
+        transform: scale(0.95);
+    }
+    .btn.bg-gray {
+        background: linear-gradient(145deg, #555, #3a3a3a);
+    }
+    .btn.bg-orange {
+        background: linear-gradient(145deg, #ff9d1d, #e67e00);
+        color: #fff;
+    }
+    .buttons { 
+        display: grid; 
+        grid-template-areas: "ac plus-minus percent divide"
+                             "seven eight nine multiply"
+                             "four five six minus"
+                             "one two three plus"
+                             "zero zero decimal equal";
+        grid-template-columns: repeat(4, 1fr);
+        grid-gap: 12px;
+        padding: 10px;
+    }
+    .btn.zero {
+        grid-area: zero;
+        width: 140px;
+        border-radius: 35px;
+        justify-self: start;
+        margin-left: 5px;
+        line-height: 65px;
+    }
+    .display {
+        height: 120px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        padding: 30px;
+        margin-bottom: 20px;
+    }
+    .btn.equal {
+        grid-area: equal;
+        background: linear-gradient(145deg, #ff9d1d, #e67e00);
+    }
+    .display p {
+        font-size: 3.2rem;
+        margin: 0;
+        overflow: hidden;
+        font-weight: 600;
+        letter-spacing: 2px;
+    }
+</style>
